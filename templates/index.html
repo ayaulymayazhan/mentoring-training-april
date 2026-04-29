@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Mentor Training Program{% endblock %}
+{% block content %}
+<section class="hero card">
+  <h2>Mentor Training Program</h2>
+  <p>
+    Этот тренинг научит вас эффективно управлять группой из 4 новичков, проверять их тикеты на высшем уровне и давать объективный фидбэк по чётким критериям. Мы прокачаем ваши навыки в проверке работы и общении с командой.
+  </p>
+  <div class="progress-wrap">
+    <div class="progress-meta">
+      <strong>Completion</strong>
+      <span>{{ progress.completion_percentage }}%</span>
+    </div>
+    <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ progress.completion_percentage }}">
+      <div class="progress-fill" style="width: {{ progress.completion_percentage }}%;"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h3>Modules</h3>
+  <div class="grid modules-list">
+    {% for module in modules %}
+    <article class="card {% if module['id'] == 1 %}module-card-with-media{% endif %}">
+      {% if module['id'] == 1 %}
+      <div class="module-main">
+        <h4>1. Roles & Responsibilities (Кто такой ментор?)</h4>
+        <p class="module-note">Переход из режима «я — агент» в режим «я — супервайзер/коуч».</p>
+        {% if module['is_unlocked'] %}
+        <a class="button" href="{{ url_for('module_page', module_id=module['id']) }}">Start Module</a>
+        {% else %}
+        <span class="button button-locked">&#128274; Locked</span>
+        {% endif %}
+      </div>
+      <div class="module-media">
+        <video autoplay muted loop playsinline preload="metadata">
+          <source src="{{ url_for('module_fun_gif') }}" type="video/mp4" />
+        </video>
+      </div>
+      {% else %}
+      <h4>{{ module['id'] }}. {{ module['title'] }}</h4>
+      {% if module['id'] == 2 %}
+      <p>Утренние сессии по Duplicates, Wrong Emails и Background Checks - твой ежедневный мини-spectacle. Без него ньюби идут в смену вслепую, как водитель без зеркал. С ним у тебя команда, которая видит дорогу.</p>
+      {% else %}
+      <p>{{ module['description'] }}</p>
+      {% endif %}
+      {% if module['is_unlocked'] %}
+      <a class="button" href="{{ url_for('module_page', module_id=module['id']) }}">Start Module</a>
+      {% else %}
+      <span class="button button-locked">&#128274; Locked</span>
+      {% endif %}
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

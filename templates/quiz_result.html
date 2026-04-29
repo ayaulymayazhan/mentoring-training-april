@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Quiz Result{% endblock %}
+{% block content %}
+<section class="card">
+  <h2>Quiz Result</h2>
+  <p><strong>Score:</strong> {{ result.score }}% ({{ result.correct }}/{{ result.total }} correct)</p>
+
+  <h3>Feedback</h3>
+  <ul>
+    {% for item in result.results %}
+    <li>
+      <strong>{{ item.question }}</strong><br />
+      Your answer: {{ item.selected_answer or 'No answer' }}<br />
+      Correct answer: {{ item.correct_answer }}<br />
+      {% if item.is_correct %}
+      <span class="ok">Correct</span>
+      {% else %}
+      <span class="bad">Incorrect</span>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+
+  <div class="actions">
+    <a class="button" href="{{ url_for('module_page', module_id=module_id, user_id=user_id) }}">Retry module</a>
+    <a class="button secondary" href="{{ url_for('progress_page', user_id=user_id) }}">View progress</a>
+  </div>
+</section>
+{% endblock %}

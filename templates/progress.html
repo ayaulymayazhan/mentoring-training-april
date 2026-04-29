@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Progress Dashboard{% endblock %}
+{% block content %}
+<section class="card">
+  <h2>Progress Dashboard</h2>
+  <p><strong>User ID:</strong> {{ progress.user_id }}</p>
+  <p><strong>Completed:</strong> {{ progress.completed_modules }}/{{ progress.total_modules }}</p>
+  <p><strong>Total completion:</strong> {{ progress.completion_percentage }}%</p>
+</section>
+
+<section class="card">
+  <h3>Module Status</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Module</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for module in progress.modules %}
+      <tr>
+        <td>{{ module.title }}</td>
+        <td>{{ module.completion_status }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

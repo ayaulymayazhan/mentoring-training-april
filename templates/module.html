@@ -1,0 +1,683 @@
+{% extends "base.html" %}
+{% block title %}Module {{ module.id }}{% endblock %}
+{% block content %}
+<section class="actions">
+  <a class="button secondary" href="{{ url_for('landing_page', user_id=user_id) }}">Back to Home</a>
+</section>
+
+<section class="module-tabs-wrap card">
+  <div class="module-tabs">
+    {% for tab in module_tabs %}
+      {% set module1_pending_lock = module.id == 1 and tab['id'] == 2 %}
+      {% set module2_pending_lock = module.id == 2 and tab['id'] == 3 %}
+      {% set module3_pending_lock = module.id == 3 and tab['id'] == 4 %}
+      {% set module4_pending_lock = module.id == 4 and tab['id'] == 5 %}
+      {% set force_lock_on_module_two = module.id == 2 and tab['id'] >= 4 %}
+      {% set force_lock_on_module_three = module.id == 3 and tab['id'] >= 5 %}
+      {% set force_unlock_module_one = module.id == 2 and tab['id'] == 1 %}
+      {% set force_unlock_module_three = module.id == 2 and tab['id'] == 3 %}
+      {% set force_unlock_module_four = module.id == 3 and tab['id'] == 4 %}
+      {% set force_unlock_module_five = module.id == 4 and tab['id'] == 5 %}
+      {% set pending_lock = module1_pending_lock or module2_pending_lock or module3_pending_lock or module4_pending_lock %}
+      {% set tab_unlocked = (tab['is_unlocked'] or force_unlock_module_one or force_unlock_module_three or force_unlock_module_four or force_unlock_module_five) and not force_lock_on_module_two and not force_lock_on_module_three %}
+      {% if tab_unlocked %}
+        <a
+          class="module-tab {% if tab['id'] == module.id %}is-active{% endif %} {% if pending_lock %}is-locked{% endif %}"
+          data-module-id="{{ tab['id'] }}"
+          {% if pending_lock %}data-requires-check="true" aria-disabled="true"{% endif %}
+          href="{{ url_for('module_page', module_id=tab['id'], user_id=user_id) }}"
+        >
+          <span data-tab-label>{% if pending_lock %}🔒 Module {{ tab['id'] }}{% else %}Module {{ tab['id'] }}{% endif %}</span>
+        </a>
+      {% else %}
+        <span class="module-tab is-locked" data-module-id="{{ tab['id'] }}">🔒 Module {{ tab['id'] }}</span>
+      {% endif %}
+    {% endfor %}
+  </div>
+</section>
+
+<section class="card">
+  <h2>Module {{ module.id }}: {{ module.title }}</h2>
+  {% if module.id == 1 %}
+  <h3 class="module-subheading">Переход из режима «я — агент» в режим «я — супервайзер/коуч».</h3>
+  <div class="topic-slider" data-slider>
+    <div class="topic-slides">
+      <article class="topic-slide is-active" data-slide>
+        <h4 class="slide-title-with-icon">
+          <img src="{{ url_for('topic_icon') }}" alt="Role icon" class="slide-title-icon" />
+          <span>1. Новая роль</span>
+        </h4>
+        <p>Когда ты переходишь в роль ментора, ты перестаешь быть просто агентом, выполняющим задачи, и становишься <strong>супервайзером</strong> и <strong>коучем</strong> для твоих новичков.</p>
+      </article>
+      <article class="topic-slide" data-slide hidden>
+        <h4 class="slide-title-with-icon">
+          <img src="{{ url_for('topic_icon_2') }}" alt="Role details icon" class="slide-title-icon" />
+          <span>2. Что входит в роль</span>
+        </h4>
+        <p>Твоя роль - это не только проверка тикетов, но и передача знаний, создание доверительной атмосферы и помощь в профессиональном росте твоих <strong>менти</strong>.</p>
+      </article>
+      <article class="topic-slide" data-slide hidden>
+        <h4 class="slide-title-with-icon">
+          <img src="{{ url_for('topic_icon_3') }}" alt="Focus icon" class="slide-title-icon" />
+          <span>3. Ключевой фокус</span>
+        </h4>
+        <p>Важно помнить, что ты - <strong>мост</strong> между теорией и реальной работой.</p>
+      </article>
+      <article class="topic-slide" data-slide hidden>
+        <h4 class="slide-title-with-icon">
+          <img src="{{ url_for('topic_icon_4') }}" alt="Goal icon" class="slide-title-icon" />
+          <span>4. Главная цель</span>
+        </h4>
+        <p>Твоя задача - за три дня подготовить <strong>newbies</strong> к самостоятельным сменам.</p>
+      </article>
+    </div>
+    <div class="topic-slider-controls">
+      <button type="button" class="button secondary slider-btn" data-prev>&larr; Prev</button>
+      <div class="topic-dots">
+        <button type="button" class="topic-dot is-active" data-dot="0" aria-label="Slide 1"></button>
+        <button type="button" class="topic-dot" data-dot="1" aria-label="Slide 2"></button>
+        <button type="button" class="topic-dot" data-dot="2" aria-label="Slide 3"></button>
+        <button type="button" class="topic-dot" data-dot="3" aria-label="Slide 4"></button>
+      </div>
+      <button type="button" class="button secondary slider-btn" data-next>Next &rarr;</button>
+    </div>
+  </div>
+  <div class="module-topics-widget">
+    <h4>Module 1 Topics:</h4>
+    <details class="module-topic-item">
+      <summary>Mentor’s Daily Routine</summary>
+      <div class="routine-cards">
+        <article class="routine-card">
+          <div class="routine-card-title">Утренний Sync &amp; Morning Trainings</div>
+          <div class="routine-card-body">Обязательно познакомься с новичками, создай дружескую атмосферу и проговори basic rules linked to our values. Это поможет всем быть на одной волне с самого начала.</div>
+        </article>
+        <article class="routine-card">
+          <div class="routine-card-title">Live Monitoring &amp; Approval Loop &amp; Random Syncs when needed</div>
+          <div class="routine-card-body">Мониторь всю смену, одобряй ответы, если всё хорошо, и зови на рандомные синки, если тема сложная и нужно устное объяснение. Будь всегда на связи и готов помочь, когда нужно.</div>
+        </article>
+        <article class="routine-card">
+          <div class="routine-card-title">Every day, related training</div>
+          <div class="routine-card-body">Проводи ежедневный тренинг, который соответствует твоему дню. Аутлайн ниже:)</div>
+        </article>
+        <article class="routine-card">
+          <div class="routine-card-title">Final Sync в конце дня</div>
+          <div class="routine-card-body">В конце дня проводи калибровку с чек-листом, обсуждай пропущенные случаи и проверяй, что все задачи выполнены. Review checklist &amp; prepare back-up tickets для каждого случая в чек-листе, чтобы ничего не забыть.</div>
+        </article>
+      </div>
+    </details>
+    <details class="module-topic-item">
+      <summary>The Workflow: как работает связка</summary>
+      <div class="workflow-slider" data-slider>
+        <div class="workflow-slides">
+          {% for slide in workflow_slides %}
+          <article class="workflow-slide {% if loop.first %}is-active{% endif %}" data-slide {% if not loop.first %}hidden{% endif %}>
+            {% if slide.image_url %}
+            <img src="{{ slide.image_url }}" alt="Workflow step {{ loop.index }}" class="workflow-image" />
+            {% else %}
+            <div class="workflow-image workflow-placeholder">Добавь фото: workflow-{{ loop.index }}.png</div>
+            {% endif %}
+            <p class="workflow-caption">{{ slide.caption }}</p>
+          </article>
+          {% endfor %}
+        </div>
+        <div class="topic-slider-controls">
+          <button type="button" class="button secondary slider-btn" data-prev>&larr; Prev</button>
+          <div class="topic-dots">
+            {% for slide in workflow_slides %}
+            <button type="button" class="topic-dot {% if loop.first %}is-active{% endif %}" data-dot="{{ loop.index0 }}" aria-label="Workflow slide {{ loop.index }}"></button>
+            {% endfor %}
+          </div>
+          <button type="button" class="button secondary slider-btn" data-next>Next &rarr;</button>
+        </div>
+      </div>
+    </details>
+    <details class="module-topic-item">
+      <summary>Key values to teach</summary>
+      <div class="values-showcase">
+        <article class="value-card">
+          <div class="value-title">📚 Self-study</div>
+          <div class="value-tip">Научи новичков сначала искать ответы в Knowledge Base и составлять ответы на основе информации, а затем задавать точечные вопросы, если что-то не понятно.</div>
+        </article>
+        <article class="value-card">
+          <div class="value-title">🔍 Curiosity</div>
+          <div class="value-tip">Если новичок не находит ответ или не уверен, научи, что лучше задать вопрос, чем допустить ошибку. Донеси, что это ускоряет их обучение и помогает понять другие процессы.</div>
+        </article>
+        <article class="value-card">
+          <div class="value-title">⚡ Proactivity</div>
+          <div class="value-tip">Научи, что мы не ограничиваемся только каскадами. Расскажи, что мы их блендим, убираем, где нужно, и больше помогаем, если можем. Важно не только выполнять задачи, но и активно их улучшать.</div>
+        </article>
+        <article class="value-card">
+          <div class="value-title">🧭 Discipline</div>
+          <div class="value-tip">Научи, что точность и своевременность важны. Напомни, что мы не опаздываем на синки, всё делаем в срок и по плану.</div>
+        </article>
+        <article class="value-card">
+          <div class="value-title">🌱 Adaptability</div>
+          <div class="value-tip">Внедри понимание, что это стартап - всё может меняться ежедневно, и мы должны быстро адаптироваться к изменениям, чтобы оставаться гибкими.</div>
+        </article>
+      </div>
+    </details>
+  </div>
+  {% else %}
+  {% if module.id == 2 %}
+  <p>Утренние сессии по Duplicates, Wrong Emails и Background Checks - твой ежедневный мини-spectacle. Без него ньюби идут в смену вслепую, как водитель без зеркал. С ним у тебя команда, которая видит дорогу.</p>
+  <div class="idea-highlight">
+    <div class="idea-icon" aria-hidden="true">💡</div>
+    <p>Morning training - это не лекция и не final exam. Это разбор боевых кейсов, после которого ньюби понимает не «куда нажать», а почему именно туда. У тебя 20-30 минут. За это время ты должен дать один топик до конца и закрепить его так, чтобы вечером ньюби сам ловил эту ошибку у себя.</p>
+  </div>
+  <div class="idea-highlight idea-highlight-rules">
+    <div class="idea-icon" aria-hidden="true">📋</div>
+    <p>Правило одного топика: один тренинг = один навык. Пытаться за 30 минут пройти «всё про refund» - это как объяснить вождение, теорию, ПДД и парковку за одну поездку.</p>
+  </div>
+  <div class="module-topics-widget">
+    <h4>Module 2 Topics:</h4>
+    <details class="module-topic-item">
+      <summary><strong>Deep Dive в топики:</strong> <span class="summary-light">Duplicates, Wrong Emails, Background Checks</span></summary>
+      <div class="topic-slider module2-topic-slider" data-slider>
+        <div class="topic-slides">
+          <article class="topic-slide is-active" data-slide>
+            <h4>Duplicates</h4>
+            <p>Твоя задача - не дать ньюби решить, что <strong>«два письма от одного email = дубликат, мерджим»</strong>. Покажи 3 кейса: один очевидный (мерджим), один пограничный (где они почти точно ошибутся), один сложный (где даже ты в первый раз задумаешься). Сначала пусть решат сами - потом разбор.</p>
+          </article>
+          <article class="topic-slide" data-slide hidden>
+            <h4>Wrong Emails</h4>
+            <p>Это <strong>самый опасный</strong> топик. Здесь рождаются истории, которые потом полгода ходят легендами по чату. Пройди по флоу поиска Wrong Email юзеров. Обязательно покажи <strong>anti-example</strong> - реальный случай, где данные ушли не туда. Это запоминается лучше любых KB-ссылок: страх - отличный учитель.</p>
+          </article>
+          <article class="topic-slide" data-slide hidden>
+            <h4>Background Checks</h4>
+            <p>BG check это твой <strong>bouncer на входе в клуб</strong>: не проверил - пропустил мошенника. Разбери: где смотреть, что сверять (email, name, country, payment history, previous tickets), какие красные флаги (PayPal email difference, Typo, etc). Закрепи через мини-кейс «проведи BG check вслух» - пусть ньюби озвучит каждый шаг. Это не унизительно, это эффективно.</p>
+          </article>
+        </div>
+        <div class="topic-slider-controls">
+          <button type="button" class="button secondary slider-btn" data-prev>&larr; Prev</button>
+          <div class="topic-dots">
+            <button type="button" class="topic-dot is-active" data-dot="0" aria-label="Deep Dive slide 1"></button>
+            <button type="button" class="topic-dot" data-dot="1" aria-label="Deep Dive slide 2"></button>
+            <button type="button" class="topic-dot" data-dot="2" aria-label="Deep Dive slide 3"></button>
+          </div>
+          <button type="button" class="button secondary slider-btn" data-next>Next &rarr;</button>
+        </div>
+      </div>
+      <a
+        class="docs-creative-link"
+        href="https://docs.google.com/spreadsheets/d/1RMsu5dl5Om6o8-dAv6cPG7w00Qn3fM0hHRiauEwH9T4/edit?gid=1975284147#gid=1975284147"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span class="docs-creative-icon" aria-hidden="true">🚀</span>
+        <span class="docs-creative-text">
+          <strong>Открыть боевой документ</strong>
+          <small>Аутлайны всех тренингов по ссылке</small>
+        </span>
+        <span class="docs-creative-cta">Go to Docs</span>
+      </a>
+    </details>
+    <details class="module-topic-item">
+      <summary>Active Engagement: <span class="summary-light">как не превратить встречу в монолог</span></summary>
+      <p>Если ты говоришь больше 60% времени - поздравляем, ты не тренер, ты подкаст. И никто не подписался.</p>
+      <p><strong>Что превращает тренинг в живое:</strong></p>
+      <div class="checklist-shell" data-checklist-shell>
+        <div class="checklist-progress-head">
+          <strong>Шкала Живого Тренинга 🤪</strong>
+          <span data-checklist-percent>0%</span>
+        </div>
+        <div class="checklist-frame" style="--checklist-fill: 0%;">
+          <div class="checklist-fill-layer" data-checklist-fill-layer></div>
+          <div class="checklist-points" data-checklist>
+            <label><input type="checkbox" /> <span><strong>Кейсы вслух.</strong> Дай ньюби тикет, скажи «расскажи, что ты видишь и что бы сделал». Не перебивай. Договорил - твой комментарий.</span></label>
+            <label><input type="checkbox" /> <span><strong>Ротация.</strong> На каждом кейсе - новый ньюби. Иначе один активный отвечает за всех, остальные молча ждут конца смены.</span></label>
+            <label><input type="checkbox" /> <span><strong>«Почему?» вместо «Что?».</strong> Вместо «Какой каскад выберешь?», спроси «Почему именно этот?».</span></label>
+            <label><input type="checkbox" /> <span><strong>5-секундная пауза после вопроса.</strong> Не отвечай за них. Они думают. Ты не на TV-эфире.</span></label>
+            <label><input type="checkbox" /> <span><strong>Mini-quiz в конце.</strong> Задай 3 коротких вопроса, и ты сразу видишь, кто понял, а кто кивал из вежливости.</span></label>
+          </div>
+        </div>
+      </div>
+    </details>
+    <details class="module-topic-item">
+      <summary>Set Trusting Environment</summary>
+      <p>Ньюби, которому страшно задать вопрос, будет молча ошибаться.</p>
+      <div class="trust-cards">
+        <article class="trust-card trust-card-split">
+          <div class="trust-card-content">
+            <div class="trust-card-title">Ice breakers с первой смены</div>
+            <div class="trust-card-body">5 минут на «откуда ты, что любишь, как сюда попал». Это инвестиция в то, чтобы он ньюбик написал тебе, когда в 14:30 у него горит сложный кейс.</div>
+          </div>
+          <div class="trust-card-side-emoji" aria-hidden="true">🧊</div>
+        </article>
+        <article class="trust-card trust-card-split">
+          <div class="trust-card-content">
+            <div class="trust-card-title">Bond с каждым отдельно</div>
+            <div class="trust-card-body">В группе из 4-х один всегда тише. Спроси «как идёт?». Это твоя ответственность, не его.</div>
+          </div>
+          <div class="trust-card-side-emoji" aria-hidden="true">🦴</div>
+        </article>
+        <article class="trust-card trust-card-split">
+          <div class="trust-card-content">
+            <div class="trust-card-title">Define communication channel</div>
+            <div class="trust-card-body">На первом созвоне договоритесь: где они пишут вопросы, что делать в emergency.</div>
+          </div>
+          <img
+            class="trust-card-image trust-card-image-contain trust-card-image-small"
+            src="https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg"
+            alt="Slack app"
+          />
+        </article>
+        <article class="trust-card trust-card-split">
+          <div class="trust-card-content">
+            <div class="trust-card-title">Нормализуй ошибки</div>
+            <div class="trust-card-body">Скажи прямо: «В первые 3 дня косячить - это норма. Главное - не косячить дважды одинаково.»</div>
+          </div>
+          <div class="trust-card-side-emoji" aria-hidden="true">👌</div>
+        </article>
+      </div>
+    </details>
+  </div>
+  {% elif module.id == 3 %}
+  <p>У тебя 3-4 ньюби и одна голова. Твоя задача это менеджить поток. Если поток вышел из-под контроля - качество улетело туда же.</p>
+  <div class="module3-hero">
+    <p>Mentoring ≠ «читаю их тикеты весь день». Mentoring = air traffic controller: ты следишь за нагрузкой каждого, ловишь «тихих» и не даешь никому уйти в штопор. Тикеты - это самолеты. Ты - диспетчер. Если ты разглядываешь один самолет под микроскопом, остальные три уже где-то столкнулись.</p>
+  </div>
+  <div class="module-topics-widget">
+    <h4>Module 3 Topics</h4>
+    <details class="module-topic-item">
+      <summary>Status &amp; Availability Management (Папка ньюби)</summary>
+      <p>Папка ньюби - твой главный индикатор.</p>
+      <div class="management-gear-board">
+        <article class="management-corner">
+          <h5>Правило 10 тикетов</h5>
+          <p>Накопилось 10 отключай availability. Включаем обратно, когда разгребет. 10 открытых тикетов в голове новичка = 10 вариантов закосячить в спешке.</p>
+        </article>
+        <article class="management-corner">
+          <h5>Break только с пустой папкой</h5>
+          <p>Уходит на брейк - папка должна быть чистой. Иначе тикеты зависнут на 40 минут, юзер ждет, FRT горит.</p>
+        </article>
+        <article class="management-corner">
+          <h5>Считай время заранее (math first)</h5>
+          <p>Break в 13:00, сейчас 12:30, в папке 10 тикетов. Успеет? Нет. Средний темп новичка ~= 10 тикетов за 1.5-2 часа (у каждого свой, ориентируйся на конкретного ньюби). Значит, отключай availability заранее, чтобы к 13:00 папка была пустой.</p>
+        </article>
+        <article class="management-corner">
+          <h5>Только во время менторинга</h5>
+          <p>На независимых сменах самостоятельно отключать availability нельзя. Подключаешься в 9:00, отключаешься в 17:00, в перерыв - только на брейк. Никакой самодеятельности «я устал, отдохну». Иначе через неделю выяснится, что человек работал 4 часа из 8.</p>
+        </article>
+        <div class="management-gear-center" aria-hidden="true">
+          <span class="management-gear-icon">⚙️</span>
+        </div>
+      </div>
+    </details>
+    <details class="module-topic-item">
+      <summary>Ticket Assignment на ментора</summary>
+      <p>Ньюби должен уметь и помнить, как ассайнить тикет на тебя.</p>
+      <p><strong>Покажи механику пошагово на первом созвоне.</strong> Где найти твое имя, как assign, как убедиться, что назначилось правильно.</p>
+      <p><strong>Двойная проверка имени.</strong> Это не паранойя, это история из жизни: ньюби ассайнил тикет на левого агента с похожим именем, который даже не на смене (или бывало такое, что ментора ассайнили тикеты не на того агента). Поэтому учи: их быть внимательными.</p>
+      <div class="people-emoji-strip" aria-hidden="true">
+        <span>🧑‍💼</span><span>🧑‍💼</span><span>🧑‍💼</span><span>🧑‍💼</span><span>🧑‍💼</span><span>🧑‍💼</span><span>🧑‍💼</span><span>🧑‍💼</span><span>🧑‍💼</span><span>🧑‍💼</span><span>🧑‍💼</span><span>🧑‍💼</span><span>🧑‍💼</span><span>🧑‍💼</span><span>🧑‍💼</span><span>🧑‍💼</span><span>🧑‍💼</span><span>🧑‍💼</span><span>🧑‍💼</span><span>🧑‍💼</span><span>🧑‍💼</span><span>🧑‍💼</span><span>🧑‍💼</span><span>🧑‍💼</span>
+      </div>
+    </details>
+    <details class="module-topic-item">
+      <summary>Status Changes (КРИТИЧНО, читать дважды)</summary>
+      <p>Это одна из самых грубых ошибок ньюби. Бьет по юзеру напрямую и сразу.</p>
+      <div class="status-emoji-points">
+        <div class="status-emoji-point">
+          <p><strong>Главное правило:</strong> статус не меняем, пока reply не отправлен. Никогда. Resolved/Closed - только после ответа.</p>
+          <span class="status-emoji" aria-hidden="true">🚦</span>
+        </div>
+        <div class="status-emoji-point">
+          <p><strong>Anti-pattern из реальности.</strong> Были кейсы, когда ньюби закрывал пустые тикеты - без ответа юзеру. То есть юзер написал нам, мы прочитали, нажали Close и ушли пить чай. Юзер сидит и ждет. Это грубая ошибка, которая может стоить нам репутации.</p>
+          <span class="status-emoji" aria-hidden="true">⚠️</span>
+        </div>
+        <div class="status-emoji-point">
+          <p><strong>Как проверить.</strong> На первой смене - сама проверяй каждый closed/resolved тикет ньюби: есть ли ответ? Нет - verbal warning сразу, разбор на final sync, фиксация в Mentoring File.</p>
+          <span class="status-emoji" aria-hidden="true">✅</span>
+        </div>
+      </div>
+    </details>
+    <details class="module-topic-item">
+      <summary>The "Silent Newbie" Problem</summary>
+      <p>Спокойного, продуктивного новичка не бывает в первые 3 дня. Бывает зависший новичок, который боится спросить.</p>
+      <div class="silent-flow">
+        <article class="silent-step">
+          <h5><span class="silent-step-emoji" aria-hidden="true">🤔</span> Возможные причины</h5>
+          <p>Залип на сложном кейсе, постеснялся, упал Solid, проблемы с инетом, личное.</p>
+        </article>
+        <div class="silent-arrow" aria-hidden="true">⬇️</div>
+        <article class="silent-step">
+          <h5><span class="silent-step-emoji" aria-hidden="true">📣</span> Что делать</h5>
+          <p>Используй communication channel - пингани в группе: «Как ты там, на чем сидишь?» Лучше потерять 2 минуты на пинг, чем час на «оказывается, у него Solid не открывался еще с 10 утра».</p>
+        </article>
+        <div class="silent-arrow" aria-hidden="true">⬇️</div>
+        <article class="silent-step">
+          <h5><span class="silent-step-emoji" aria-hidden="true">📝</span> Если молчит регулярно - это паттерн</h5>
+          <p>Разбираем на final sync, фиксируем в Mentoring File (Engagement / Communication). Это сигнал, что человеку нужна помощь, а не «он же сам молчит, значит все ок».</p>
+        </article>
+      </div>
+    </details>
+    <details class="module-topic-item">
+      <summary>Break Protocol (не пропадай как бывшая)</summary>
+      <p>Простое правило, которое предотвращает 90% хаоса в смене.</p>
+      <div class="break-triangle">
+        <article class="break-point">
+          <h5>💬 Ньюби обязательно пишет в чат смены</h5>
+          <p>Break уходя, Back возвращаясь. Это не формальность, это обязательство и надо дать им понять.</p>
+        </article>
+        <article class="break-point">
+          <h5>🧑‍🏫 Ментор пишет за ньюби в shift chat</h5>
+          <p>От их имени или с пометкой «X out / X back». Не в Agent Dashboard. Чат смены - единственное место, где это считается.</p>
+        </article>
+        <article class="break-point">
+          <h5>✅ На независимых сменах ньюби делает это сам</h5>
+          <p>Закладывай привычку с первого дня: после 3-х дней менторинга Break/Back должно быть на автомате, как «привет» при входе.</p>
+        </article>
+      </div>
+    </details>
+  </div>
+  {% elif module.id == 4 %}
+  <p>1-5 баллов. Звучит просто, пока два ментора не поставили 5 за то, за что третий ставит 3.</p>
+  <div class="grading-highlight">
+    <p><strong>Оценка</strong> - не впечатление, а измеримый сигнал: готов ли агент к independent shift. Если калибровка между менторами хромает, система ломается: один ньюби идет в смену с 4-кой ментора A, при том что у ментора B он бы получил 2-ку. Поэтому у нас единые критерии, единые маркеры и единая логика заполнения Mentoring File.</p>
+    <span class="grading-highlight-emoji" aria-hidden="true">📊</span>
+  </div>
+  <div class="module-topics-widget">
+    <h4>Module 4 Topics</h4>
+    <details class="module-topic-item">
+      <summary>Organization &amp; Tracking: Mentoring File</summary>
+      <div class="alert-burn-red">
+        <p>Mentoring File - это единый источник по прогрессу ньюби. Не «когда вспомню», а до 18:00 после смены.</p>
+      </div>
+      <a
+        class="mf-doc-link"
+        href="https://docs.google.com/spreadsheets/d/1RMsu5dl5Om6o8-dAv6cPG7w00Qn3fM0hHRiauEwH9T4/edit?gid=825658586#gid=825658586"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span class="mf-doc-icon" aria-hidden="true">📎</span>
+        <span class="mf-doc-text">
+          <strong>Открыть Mentoring File</strong>
+          <small>Заполни и проверь калибровку до 18:00</small>
+        </span>
+        <span class="mf-doc-cta">Open</span>
+      </a>
+      <div class="mf-cards">
+        <article class="mf-card">
+          <h5>Заполняй полно</h5>
+          <p>Пустое поле «Notes» = сигнал тимлиду «ментор не следил». Если по пункту нечего сказать - напиши «все в норме», но не оставляй пустоту. Тишина в Mentoring File читается как лень.</p>
+        </article>
+        <article class="mf-card">
+          <h5>Прикрепляй пруф</h5>
+          <p>В feedback - всегда ссылки на тикеты (минимум 1-2 «за» и «против»). Без пруфа фидбэк превращается в «мне так показалось», а это не фидбэк, это гороскоп.</p>
+        </article>
+      </div>
+    </details>
+    <details class="module-topic-item">
+      <summary>Calibration (Калибровка между менторами)</summary>
+      <ul>
+        <li><strong>Сравниваем ньюби.</strong> Если у двоих по 5 за Tech, но один путал каскады, а другой нет - баллы не сходятся с реальностью, перекалибровываем на месте.</li>
+        <li><strong>Дискуссионные кейсы</strong> - в Notes. Чтобы тимлид мог сверить и при необходимости рассудить.</li>
+      </ul>
+      <div class="calibration-scale">
+        <span class="calibration-side">Newbie 1</span>
+        <span class="calibration-scale-icon" aria-hidden="true">⚖️</span>
+        <span class="calibration-side">Newbie 2</span>
+      </div>
+    </details>
+    <details class="module-topic-item">
+      <summary>Writing Feedback: Strengths vs. Areas to work on</summary>
+      <p>Хороший фидбэк = конкретный + actionable + с пруфом. Общие фразы запрещены. «Молодец, работай над собой» - это не фидбэк, это пожелание удачи.</p>
+      <div class="feedback-examples">
+        <article class="feedback-example bad">
+          <h5>❌ Плохо</h5>
+          <p>«Молодец, хорошо работает. Нужно быть внимательнее.»</p>
+        </article>
+        <article class="feedback-example good">
+          <h5>✅ Хорошо</h5>
+          <p>«Strengths: грамотный blending каскадов в Refund-флоу - см. ticket #12345 (совместил Apology + Refund Confirmation без потери tone).</p>
+          <p>Areas to work on: дважды за смену пропустил BG check (#12350, #12361) - это бьет по Attention/Safety.»</p>
+        </article>
+      </div>
+    </details>
+    <div class="module4-image-wrap">
+      <h5 class="module4-image-title">🎯 Calibration Scoreboard: единая шкала, единая логика</h5>
+      <img src="{{ url_for('module4_topic_image') }}" alt="Module 4 topics visual" class="module4-topic-image" />
+    </div>
+  </div>
+  {% elif module.id == 5 %}
+  <p>Фидбэк - это ракета или якорь. Хороший - поднимает ньюби вверх, плохой - топит мотивацию вместе с прогрессом. Учимся делать ракеты.</p>
+  <div class="grading-highlight">
+    <p>Фидбэк - это инструмент роста. Хороший mentor-фидбэк объясняет «почему», привязывает ошибку к ценности или безопасности, и даёт конкретный шаг вперёд. Плохой («исправь тут», «переделай») создаёт сопротивление, демотивацию и в итоге - рецидивы. А рецидивы - это балл по Learning Curve вниз, и круг замкнулся.</p>
+    <span class="grading-highlight-emoji" aria-hidden="true">🚀</span>
+  </div>
+  <div class="module-topics-widget">
+    <h4>Module 5 Topics</h4>
+    <details class="module-topic-item">
+      <summary>The "Why" not just "How"</summary>
+      <p>«Исправь это» - учит копировать. «Исправь, потому что это ломает [что-то]» - учит думать.</p>
+      <div class="feedback-examples">
+        <article class="feedback-example bad">
+          <h5>❌ Пример</h5>
+          <p>«Поменяй каскад на *cascade name*»</p>
+        </article>
+        <article class="feedback-example good">
+          <h5>✅ Пример</h5>
+          <p>«Поменяй каскад на *cascade name* - потому что текущий звучит как обвинение юзера. Brand Voice ломается: юзер уже расстроен, наша задача - не подливать масла»</p>
+        </article>
+      </div>
+      <p>Каждый раз перед правкой спроси себя: смогу ли я объяснить, какую ценность или какой риск это затрагивает? Да - пиши «потому что». Нет - может, это и не критично, и ноутс не нужен. Не превращай каждую правку в эссе.</p>
+    </details>
+    <details class="module-topic-item">
+      <summary>The 3-Revision Rule</summary>
+      <p>Если после 3-й правки тикет всё ещё плохой - не переписываем за ньюби, идём и разбираем на <strong>коле</strong>.</p>
+      <p><strong>Почему 3?</strong></p>
+      <div class="revision-steps">
+        <article class="revision-step">
+          <span class="revision-step-emoji" aria-hidden="true">1️⃣</span>
+          <p>Первая - учим.</p>
+        </article>
+        <article class="revision-step">
+          <span class="revision-step-emoji" aria-hidden="true">2️⃣</span>
+          <p>Вторая - закрепляем.</p>
+        </article>
+        <article class="revision-step">
+          <span class="revision-step-emoji" aria-hidden="true">3️⃣</span>
+          <p>Третья - тяжелая артиллерия.</p>
+        </article>
+      </div>
+      <div class="revision-notes">
+        <h5 class="revision-note-heading">Почему не переписать самим?</h5>
+        <article class="revision-note">
+          <p><span class="revision-note-emoji" aria-hidden="true">🛑</span> Когда ментор «дорабатывает» тикет, у ньюби в голове ничего не закрепляется. Через неделю та же ошибка - и привет, рецидив. Ты не помог - ты сделал работу за него.</p>
+        </article>
+        <h5 class="revision-note-heading">Что на коле?</h5>
+        <article class="revision-note">
+          <p><span class="revision-note-emoji" aria-hidden="true">🎯</span> 5-10 минут разбираем кейс, ньюби сам формулирует решение, вместе проходим по правильному флоу. Эффективнее, чем 5 кругов письменных правок.</p>
+        </article>
+        <h5 class="revision-note-heading">Что фиксировать ?</h5>
+        <article class="revision-note">
+          <p><span class="revision-note-emoji" aria-hidden="true">📝</span> Если кейс дошёл до 3 правки пометь в Mentoring File (Areas to work on / Recommendations). Это сигнал тимлиду: «здесь нужно дополнительно».</p>
+        </article>
+      </div>
+    </details>
+    <details class="module-topic-item">
+      <summary>Cultural Values: Brand Voice &amp; Empathy</summary>
+      <p>Каждая правка тона - это урок Brand Voice в действии. Через тикеты передаются ценности компании, не через презентации.</p>
+      <div class="cultural-cards">
+        <article class="cultural-card">
+          <h5>Brand Voice</h5>
+          <p>Пишем тепло, но профессионально. Учим их следовать нашему Brand Voice.</p>
+        </article>
+        <article class="cultural-card">
+          <h5>Empathy first</h5>
+          <p>Юзер пишет, потому что у него проблема. Первая фраза в ответе - признание, а не сразу решение. «Полностью понимаю, насколько это раздражает...» работает в 10 раз лучше, чем сухое «Refund processed». Решение мы дадим - но сначала покажем, что услышали.</p>
+        </article>
+        <article class="cultural-card">
+          <h5>До/после</h5>
+          <p>Когда правишь tone - не «измени на это», а покажи пару «до/после» и объясни разницу.</p>
+        </article>
+      </div>
+    </details>
+    <details class="module-topic-item">
+      <summary>The Sandwich Method</summary>
+      <p>Базовый принцип подачи фидбэка, особенно негативного. Без булочек котлета не заходит.</p>
+      <div class="sandwich-image-wrap">
+        <img src="{{ url_for('module5_sandwich_image') }}" alt="Sandwich method visual" class="sandwich-image" />
+      </div>
+      <div class="sandwich-pillars">
+        <article class="sandwich-pillar"><h5>Strength</h5><p>что получилось хорошо.</p></article>
+        <article class="sandwich-pillar"><h5>Area to fix</h5><p>что конкретно изменить + почему.</p></article>
+        <article class="sandwich-pillar"><h5>Encouragement / next step</h5><p>поддержка и план действий.</p></article>
+      </div>
+      <p><strong>Пример:</strong> «Tone в первом абзаце отличный, чувствуется empathy. Во втором пропущен BG check перед refund. Это критично, может уйти refund на чужой аккаунт. Просмотри внимательнее аккаунт юзера в Solidgate.»</p>
+      <p>Важно: sandwich ≠ фальшивая похвала. Если хвалить нечего - лучше нейтральное наблюдение (Видно, что ты быстро ориентируешься), чем выдуманное достоинство. Ньюби фальшь чувствуют, и доверие падает быстрее, чем темп в первый день.</p>
+    </details>
+    <details class="module-topic-item">
+      <summary>Templates: фидбэк под частые ошибки</summary>
+      <p>Чтобы не писать каждый раз с нуля - у нас есть шаблоны под топ-ошибки. Используй как основу, адаптируй под конкретный кейс (имя, номер тикета, конкретная деталь). Шаблон - это скелет, не готовое блюдо.</p>
+      <h5>Топ-ошибки, под которые нужны шаблоны:</h5>
+      <ul>
+        <li>Wrong Email / отсутствие BG check</li>
+        <li>Неправильный Property</li>
+        <li>Каскады без blending (copy-paste)</li>
+        <li>Сухой tone / отсутствие empathy</li>
+        <li>Закрытие тикета без reply (status change error)</li>
+        <li>Ассайн на левого агента</li>
+        <li>Игнор Slack / медленная реакция</li>
+        <li>Нарушение Break Protocol</li>
+      </ul>
+      <div class="alert-burn-red">
+        <p>Action для ментора: перед первой менторской сменой пройдись по шаблонам, адаптируй под свой стиль, держи под рукой в Notion/Notes. Готовый шаблон экономит 80% времени на письменный фидбэк и держит консистентность между менторами. Меньше «у каждого свой стиль» - больше «у нас единый Brand Voice».</p>
+      </div>
+    </details>
+  </div>
+  {% else %}
+  <p>{{ module.description }}</p>
+  <h3>Lesson Content</h3>
+  <ol>
+    {% for point in module.content %}
+    <li>{{ point }}</li>
+    {% endfor %}
+  </ol>
+  {% endif %}
+  {% endif %}
+</section>
+
+<section class="card">
+  {% if module.id == 5 %}
+  <h3>Training Completion</h3>
+  <p>Если ты завершил(а) весь материал, нажми кнопку ниже, чтобы завершить тренинг целиком.</p>
+  {% else %}
+  <h3>Module Progression</h3>
+  <p>Нажмите Next Module после того, как пройдете весь материал выше.</p>
+  {% endif %}
+  <form method="post" action="{{ url_for('complete_and_next_module', module_id=module.id) }}" class="next-module-form" data-next-form>
+    <input type="hidden" name="user_id" value="{{ user_id }}" />
+    <label class="material-check">
+      <input type="checkbox" name="material_completed" value="yes" data-material-check />
+      Я прошел(ла) весь материал выше
+    </label>
+    <button class="button" type="submit" data-next-btn disabled>{% if module.id == 5 %}Finish Training{% else %}Next Module{% endif %}</button>
+  </form>
+</section>
+
+<script>
+  (function () {
+    const sliders = document.querySelectorAll("[data-slider]");
+    sliders.forEach((slider) => {
+      const slides = Array.from(slider.querySelectorAll("[data-slide]"));
+      const dots = Array.from(slider.querySelectorAll("[data-dot]"));
+      const prev = slider.querySelector("[data-prev]");
+      const next = slider.querySelector("[data-next]");
+      let current = 0;
+
+      const update = () => {
+        slides.forEach((slide, index) => {
+          const active = index === current;
+          slide.classList.toggle("is-active", active);
+          slide.hidden = !active;
+        });
+        dots.forEach((dot, index) => {
+          dot.classList.toggle("is-active", index === current);
+        });
+      };
+
+      prev?.addEventListener("click", () => {
+        current = (current - 1 + slides.length) % slides.length;
+        update();
+      });
+
+      next?.addEventListener("click", () => {
+        current = (current + 1) % slides.length;
+        update();
+      });
+
+      dots.forEach((dot, index) => {
+        dot.addEventListener("click", () => {
+          current = index;
+          update();
+        });
+      });
+
+      update();
+    });
+
+    const nextForm = document.querySelector("[data-next-form]");
+    if (nextForm) {
+      const checkbox = nextForm.querySelector("[data-material-check]");
+      const nextBtn = nextForm.querySelector("[data-next-btn]");
+      const sync = () => {
+        nextBtn.disabled = !checkbox.checked;
+      };
+      checkbox.addEventListener("change", sync);
+      sync();
+
+      const currentModuleId = Number({{ module.id }});
+      if (currentModuleId === 1 || currentModuleId === 2 || currentModuleId === 3 || currentModuleId === 4) {
+        const targetTabId = currentModuleId + 1;
+        const lockedNextTab = document.querySelector(`.module-tab[data-module-id="${targetTabId}"]`);
+        if (lockedNextTab && lockedNextTab.tagName === "A") {
+          const tabLabel = lockedNextTab.querySelector("[data-tab-label]");
+          const lockTab = () => {
+            lockedNextTab.classList.add("is-locked");
+            lockedNextTab.setAttribute("aria-disabled", "true");
+            if (tabLabel) tabLabel.textContent = `🔒 Module ${targetTabId}`;
+          };
+          const unlockTab = () => {
+            lockedNextTab.classList.remove("is-locked");
+            lockedNextTab.removeAttribute("aria-disabled");
+            if (tabLabel) tabLabel.textContent = `Module ${targetTabId}`;
+          };
+          const syncTabState = () => {
+            if (checkbox.checked) {
+              unlockTab();
+            } else {
+              lockTab();
+            }
+          };
+          lockedNextTab.addEventListener("click", (event) => {
+            if (!checkbox.checked) {
+              event.preventDefault();
+            }
+          });
+          checkbox.addEventListener("change", syncTabState);
+          syncTabState();
+        }
+      }
+    }
+
+    const checklistShells = document.querySelectorAll("[data-checklist-shell]");
+    checklistShells.forEach((shell) => {
+      const checklist = shell.querySelector("[data-checklist]");
+      if (!checklist) return;
+      const boxes = Array.from(checklist.querySelectorAll('input[type="checkbox"]'));
+      const frame = shell.querySelector(".checklist-frame");
+      const percentLabel = shell.querySelector("[data-checklist-percent]");
+      const syncChecklistProgress = () => {
+        const total = boxes.length;
+        const done = boxes.filter((box) => box.checked).length;
+        const percent = total > 0 ? Math.round((done / total) * 100) : 0;
+        if (frame) frame.style.setProperty("--checklist-fill", `${percent}%`);
+        if (percentLabel) percentLabel.textContent = `${percent}%`;
+      };
+
+      boxes.forEach((box) => box.addEventListener("change", syncChecklistProgress));
+      syncChecklistProgress();
+    });
+  })();
+</script>
+{% endblock %}

@@ -1,0 +1,52 @@
+Training: Be a Master Mentor 
+Этот аутлайн дает "скелет" тренинга.
+Цель: Научить менторов эффективно управлять группой из 4-х нюбиков, качественно проверять тикеты и давать объективный фидбэк по критериям.
+
+Module 1: Roles & Responsibilities (Кто такой ментор?)
+Переход из режима «я — агент» в режим «я — супервайзер/коуч».
+Мы — мост между теорией и реальной работой. Наша задача — за 3 дня подготовить агента к independent shifts.
+Mentor’s Daily Routine: 
+Утренний Sync & Morning trainings (set basic rules linked to values)
+Live Monitoring & Approval Loop & Random Syncs when needed.
+Final Sync в конце дня: calibrating with checklist, discussing missed cases (:exclamation:action: review checklist & prepare back up tickets for each case in checklist)
+• The Workflow: Как работает связка Newbie Draft ➔ Mentor Review ➔ Newbie Fix ➔ Confirmation.
+• Key values to teach: self-study, curiosity, proactivity, discipline, adaptibility
+
+Module 2: The Morning Training (Как обучать на кейсах)
+Как проводить утренние сессии по Duplicates, Wrong Emails и Background Checks.
+Deep Dive в топики: Duplicates, Wrong Emails, Background Checks Outlines 
+Action: I SHOULD UPDATE THE OUTLINES & PREPARE CASES for trainings -> prepare PPT:exclamation:
+Active Engagement: Как не превратить встречу в монолог. 
+Set trusting environment: add ice breakers, try to bond with each newbie so that they do not get shy to ask questions, define communication channel with each newbie (in case of emergency)
+
+Module 3: Newbie Management
+Лайфхаки по управлению временем, когда у тебя 3-4 новичка.
+Status Management: Когда нужно «притормозить» нюбика (turn off availability), если он не справляется с темпом или качеством.
+The "Silent Newbie" Problem: Если нюбик молчит 20 минут — это Red Flag. Правила проактивного чек-ина (remember communication channel from the first part? mentor can contact that channel). 
+Break Protocol: Приучаем нюбиков писать в чат (Out for break / Back), чтобы не терять их из виду. Также Ментора отписываются в чате смен от имени нюбиков (не в Agent dashboard)
+
+Module 4: The Criteria & Grading (Объективная оценка)
+Как ставить баллы от 1 до 5 так, чтобы это было fair и прозрачно.
+Organization & Tracking: Заполнение Mentoring File - set rules with mentors to simultaneous filling.
+Calibration (Калибровка): Разбираем каждый из критериев: (:exclamation:action: redesign criteria, prepare legend and description & vibecode the tool like Coda)
+Interactive: по описанию агента ментор должен оценить его по критериям.
+Writing Feedback: Как писать «развернутый фидбэк» (Strengths vs. Areas to work on). Избегаем общих фраз, пишем только actionable steps & прикрепляем тикеты как пруф
+Interactive: Show some good and bad examples
+
+Module 5: High-Quality Feedback (Human Firewall)
+Как давать фидбэк по тикетам, не демотивируя новичка.
+The "Why" not just "How": Не просто «исправь тут», а «исправь, потому что это влияет на [Value/Security]».
+The 3-Revision Rule: Если после 3-й правки тикет всё еще плохой — идем в созвон/huddle. Не переписываем за них!
+Cultural Values: Как транслировать ценности компании через проверку почты (Brand Voice & Empathy).
+action: prepare templates of mentor's feedback for frequent mistakes
+
+:pushpin:Mentor’s Toolkit (= Action for @Adelya Isseyeva by Friday):
+Checklist: Что обязательно покрыть за 3 дня.
+Outline for Trainings: Какие темы покрыть на тренингах
+Redesign of scoring: Пересмотр существующего скоринга :white_check_mark:(see the table below)
+Grading Rubric: Шпаргалка «что такое 5 баллов, а что такое 1» по каждому критерию. :white_check_mark:(see the table below)
+Feedback Templates: Готовые фразы для типичных ошибок (Duplicates/Wrong emails).
+Daily Tracker Template: Удобная таблица для лога нюбиков.
+
+Провела benchmark analysis, в целом подход к менторингу остается без изменений.
+будет отдельный репорт по Mentor’s Toolkit
