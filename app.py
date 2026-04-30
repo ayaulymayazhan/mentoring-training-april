@@ -4,14 +4,29 @@ import json
 import os
 import sqlite3
 from pathlib import Path
+from threading import Lock
 from typing import Any
 
 from flask import Flask, jsonify, redirect, render_template, request, send_file, url_for
 
 
 app = Flask(__name__)
-app.config["DATABASE"] = Path(__file__).with_name("training.db")
+
+
+def resolve_database_path() -> Path:
+    configured = os.getenv("DATABASE_PATH")
+    if configured:
+        return Path(configured)
+    if os.getenv("VERCEL") or os.getenv("VERCEL_ENV") or os.getenv("VERCEL_URL"):
+        # Vercel filesystem is read-only except /tmp.
+        return Path("/tmp/training.db")
+    return Path(__file__).with_name("training.db")
+
+
+app.config["DATABASE"] = resolve_database_path()
 app.config["SECRET_KEY"] = "dev-secret-key"
+_db_init_lock = Lock()
+_db_initialized = False
 
 
 MODULE_SEED = [
@@ -174,7 +189,9 @@ MODULE_SEED = [
 
 
 def get_db() -> sqlite3.Connection:
-    conn = sqlite3.connect(app.config["DATABASE"])
+    db_path = Path(app.config["DATABASE"])
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -254,6 +271,22 @@ def init_db() -> None:
                             quiz["correct_answer"],
                         ),
                     )
+
+
+def ensure_db_initialized() -> None:
+    global _db_initialized
+    if _db_initialized:
+        return
+    with _db_init_lock:
+        if _db_initialized:
+            return
+        init_db()
+        _db_initialized = True
+
+
+@app.before_request
+def bootstrap_db() -> None:
+    ensure_db_initialized()
 
 
 def module_payload(module_row: sqlite3.Row, include_answers: bool = False) -> dict[str, Any]:
@@ -709,7 +742,7 @@ def reset_demo():
 
 
 if __name__ == "__main__":
-    init_db()
+    ensure_db_initialized()
     host = os.getenv("HOST", "127.0.0.1")
     port = int(os.getenv("PORT", "5055"))
     debug = os.getenv("FLASK_DEBUG", "1") == "1"
