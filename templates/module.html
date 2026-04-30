@@ -571,7 +571,10 @@
       <input type="checkbox" name="material_completed" value="yes" data-material-check />
       Я прошел(ла) весь материал выше
     </label>
-    <button class="button" type="submit" data-next-btn disabled>{% if module.id == 5 %}Finish Training{% else %}Next Module{% endif %}</button>
+    <div class="next-module-actions">
+      <button class="button" type="submit" data-next-btn disabled>{% if module.id == 5 %}Finish Training{% else %}Next Module{% endif %}</button>
+      <a class="button secondary" href="{{ url_for('landing_page', user_id=user_id) }}">Home</a>
+    </div>
   </form>
 </section>
 

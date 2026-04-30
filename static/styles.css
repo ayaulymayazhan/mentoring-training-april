@@ -1232,6 +1232,16 @@ p, li, td, th, span, label {
   flex-direction: column;
   gap: 0.8rem;
 }
+.next-module-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.6rem;
+}
+.next-module-actions .button {
+  width: 100%;
+  text-align: center;
+}
 .material-check {
   display: flex;
   align-items: center;
