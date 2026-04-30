@@ -572,6 +572,14 @@ def module_page(module_id: int):
 
     with get_db() as conn:
         module_row = conn.execute("SELECT * FROM modules WHERE id = ?", (module_id,)).fetchone()
+        progress_row = conn.execute(
+            """
+            SELECT completion_status
+            FROM progress
+            WHERE user_id = ? AND module_id = ?
+            """,
+            (user_id, module_id),
+        ).fetchone()
 
     if not module_row:
         return "Module not found", 404
@@ -579,12 +587,14 @@ def module_page(module_id: int):
     module = module_payload(module_row)
     module_tabs = build_module_cards(user_id)
     workflow_slides = get_workflow_slides() if module_id == 1 else []
+    current_completion_status = progress_row["completion_status"] if progress_row else "not_started"
     return render_template(
         "module.html",
         module=module,
         user_id=user_id,
         workflow_slides=workflow_slides,
         module_tabs=module_tabs,
+        current_completion_status=current_completion_status,
     )
 
 

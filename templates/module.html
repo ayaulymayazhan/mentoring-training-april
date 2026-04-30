@@ -565,10 +565,10 @@
   <h3>Module Progression</h3>
   <p>Нажмите Next Module после того, как пройдете весь материал выше.</p>
   {% endif %}
-  <form method="post" action="{{ url_for('complete_and_next_module', module_id=module.id) }}" class="next-module-form" data-next-form>
+  <form method="post" action="{{ url_for('complete_and_next_module', module_id=module.id) }}" class="next-module-form" data-next-form data-module-id="{{ module.id }}" data-user-id="{{ user_id }}" data-progress-endpoint="{{ url_for('post_progress') }}">
     <input type="hidden" name="user_id" value="{{ user_id }}" />
     <label class="material-check">
-      <input type="checkbox" name="material_completed" value="yes" data-material-check />
+      <input type="checkbox" name="material_completed" value="yes" data-material-check {% if current_completion_status == 'completed' %}checked{% endif %} />
       Я прошел(ла) весь материал выше
     </label>
     <div class="next-module-actions">
@@ -623,13 +623,43 @@
     if (nextForm) {
       const checkbox = nextForm.querySelector("[data-material-check]");
       const nextBtn = nextForm.querySelector("[data-next-btn]");
+      const progressEndpoint = nextForm.dataset.progressEndpoint;
+      const currentModuleId = Number(nextForm.dataset.moduleId);
+      const userId = Number(nextForm.dataset.userId);
+      let syncRequestId = 0;
+
+      const persistProgress = async () => {
+        const requestId = ++syncRequestId;
+        const completionStatus = checkbox.checked ? "completed" : "in_progress";
+        try {
+          const response = await fetch(progressEndpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              user_id: userId,
+              module_id: currentModuleId,
+              completion_status: completionStatus
+            })
+          });
+          if (!response.ok && requestId === syncRequestId) {
+            console.error("Failed to sync module progress", response.status);
+          }
+        } catch (error) {
+          if (requestId === syncRequestId) {
+            console.error("Failed to sync module progress", error);
+          }
+        }
+      };
+
       const sync = () => {
         nextBtn.disabled = !checkbox.checked;
       };
-      checkbox.addEventListener("change", sync);
+      checkbox.addEventListener("change", () => {
+        sync();
+        persistProgress();
+      });
       sync();
 
-      const currentModuleId = Number({{ module.id }});
       if (currentModuleId === 1 || currentModuleId === 2 || currentModuleId === 3 || currentModuleId === 4) {
         const targetTabId = currentModuleId + 1;
         const lockedNextTab = document.querySelector(`.module-tab[data-module-id="${targetTabId}"]`);

@@ -27,7 +27,9 @@
         <h4>1. Roles & Responsibilities (Кто такой ментор?)</h4>
         <p class="module-note">Переход из режима «я — агент» в режим «я — супервайзер/коуч».</p>
         {% if module['is_unlocked'] %}
-        <a class="button" href="{{ url_for('module_page', module_id=module['id']) }}">Start Module</a>
+        <a class="button" href="{{ url_for('module_page', module_id=module['id']) }}">
+          {% if module['completion_status'] == 'completed' %}Review Module{% else %}Start Module{% endif %}
+        </a>
         {% else %}
         <span class="button button-locked">&#128274; Locked</span>
         {% endif %}
@@ -45,7 +47,9 @@
       <p>{{ module['description'] }}</p>
       {% endif %}
       {% if module['is_unlocked'] %}
-      <a class="button" href="{{ url_for('module_page', module_id=module['id']) }}">Start Module</a>
+      <a class="button" href="{{ url_for('module_page', module_id=module['id']) }}">
+        {% if module['completion_status'] == 'completed' %}Review Module{% else %}Start Module{% endif %}
+      </a>
       {% else %}
       <span class="button button-locked">&#128274; Locked</span>
       {% endif %}
