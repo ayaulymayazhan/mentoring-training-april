@@ -535,6 +535,15 @@ def workflow_media(filename: str):
     safe_name = Path(filename).name
     file_path = root / safe_name
     if not file_path.is_file():
+        fallback_urls = {
+            "Screenshot 2026-04-26 at 19.58.55.png": "https://raw.githubusercontent.com/ayaulymayazhan/mentoring-training-april/main/Screenshot%202026-04-26%20at%2019.58.55.png",
+            "Screenshot 2026-04-26 at 20.08.22.png": "https://raw.githubusercontent.com/ayaulymayazhan/mentoring-training-april/main/Screenshot%202026-04-26%20at%2020.08.22.png",
+            "Screenshot 2026-04-26 at 20.06.58.png": "https://raw.githubusercontent.com/ayaulymayazhan/mentoring-training-april/main/Screenshot%202026-04-26%20at%2020.06.58.png",
+            "Screenshot 2026-04-26 at 20.06.43.png": "https://raw.githubusercontent.com/ayaulymayazhan/mentoring-training-april/main/Screenshot%202026-04-26%20at%2020.06.43.png",
+        }
+        fallback_url = fallback_urls.get(safe_name)
+        if fallback_url:
+            return redirect(fallback_url)
         return "Workflow media not found", 404
     return send_file(file_path)
 
