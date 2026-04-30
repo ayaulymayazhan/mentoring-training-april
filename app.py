@@ -533,8 +533,12 @@ def topic_icon_4():
 
 @app.get("/assets/workflow-media/<path:filename>")
 def workflow_media(filename: str):
+    root = Path(__file__).resolve().parent
     safe_name = Path(filename).name
-    return send_file(Path(__file__).with_name(safe_name))
+    file_path = root / safe_name
+    if not file_path.is_file():
+        return "Workflow media not found", 404
+    return send_file(file_path)
 
 
 @app.get("/assets/module4-topic-image")
