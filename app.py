@@ -399,6 +399,12 @@ def get_workflow_slides() -> list[dict[str, str]]:
         "\U0001F527 Newbie \u0432\u043d\u043e\u0441\u0438\u0442 \u043f\u0440\u0430\u0432\u043a\u0438",
         "\u2705 Mentor \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0430\u0435\u0442, \u043e\u0442\u0432\u0435\u0442 \u043e\u0442\u043f\u0440\u0430\u0432\u043b\u044f\u0435\u0442\u0441\u044f",
     ]
+    fallback_by_idx = {
+        1: "https://raw.githubusercontent.com/ayaulymayazhan/mentoring-training-april/main/Screenshot%202026-04-26%20at%2019.58.55.png",
+        2: "https://raw.githubusercontent.com/ayaulymayazhan/mentoring-training-april/main/Screenshot%202026-04-26%20at%2020.08.22.png",
+        3: "https://raw.githubusercontent.com/ayaulymayazhan/mentoring-training-april/main/Screenshot%202026-04-26%20at%2020.06.58.png",
+        4: "https://raw.githubusercontent.com/ayaulymayazhan/mentoring-training-april/main/Screenshot%202026-04-26%20at%2020.06.43.png",
+    }
     slides: list[dict[str, str]] = []
     for idx, caption in enumerate(captions, start=1):
         if idx == 1:
@@ -439,25 +445,17 @@ def get_workflow_slides() -> list[dict[str, str]]:
                 f"workflow-{idx}.jpeg",
                 f"workflow-{idx}.webp",
             ]
-        found_name = None
+        image_url = fallback_by_idx.get(idx, "")
         for name in candidates:
             if (root / name).exists():
-                found_name = name
+                image_url = url_for("workflow_media", filename=name)
                 break
-        if found_name:
-            slides.append(
-                {
-                    "image_url": url_for("workflow_media", filename=found_name),
-                    "caption": caption,
-                }
-            )
-        else:
-            slides.append(
-                {
-                    "image_url": "",
-                    "caption": caption,
-                }
-            )
+        slides.append(
+            {
+                "image_url": image_url,
+                "caption": caption,
+            }
+        )
     return slides
 
 
