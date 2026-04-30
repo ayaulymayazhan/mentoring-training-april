@@ -32,8 +32,8 @@ _db_initialized = False
 MODULE_SEED = [
     {
         "id": 1,
-        "title": "Roles & Responsibilities (??? ????? ???????)",
-        "description": "??????? ?? ?????? ?? ? ?????? ? ????? ?? ? ???????????/?????. ??? ?????? ?? ??????????? ????????, ??? ?????? ? ?????? ????????. ?????? ?? ???? ???????, ?????? ?? ? ??????????? ? ????. ??? ?? ?????? ????? ????, ??? ??????? ? ?????????? ????? ???, ??? ?? ??????????? ????????? ?????? ????? ??????? ? ???????? ???????. ???? ??????? ?????? ? ?? ??? ??? ??????????? ??????? ? ??????????????? ??????.",
+        "title": "Roles & Responsibilities (Роли и обязанности)",
+        "description": "Переход от роли исполнителя к роли наставника/лида. Эта сессия про ежедневную систему, где новичок не просто слушает, а учится думать. Фокус не только на знании, но и на адаптации в смене. Как не просто тушить задачи, а выстроить и поддерживать темп так, чтобы не проваливалось качество работы и командная динамика. Ваша главная задача - из дня в день формировать уверенность и самостоятельность новичка.",
         "content": [
             "Transition mindset from individual contributor to supervisor and coach.",
             "Use a daily routine: morning sync, live monitoring, approval loop, and final calibration.",
@@ -63,8 +63,8 @@ MODULE_SEED = [
     },
     {
         "id": 2,
-        "title": "The Morning Training (??? ??????? ?? ??????)",
-        "description": "??? ????????? ???????? ?????? ?? Duplicates, Wrong Emails ? Background Checks.",
+        "title": "The Morning Training (Утренние сессии по кейсам)",
+        "description": "Утренние сессии по Duplicates, Wrong Emails и Background Checks - твой ежедневный мини-спектакль.",
         "content": [
             "Cover high-frequency scenarios: Duplicates, Wrong Emails, and Background Checks.",
             "Prepare practical examples and case-based exercises before each session.",
@@ -95,7 +95,7 @@ MODULE_SEED = [
     {
         "id": 3,
         "title": "Newbie Management",
-        "description": "???????? ?? ?????????? ????????, ????? ? ???? 3-4 ???????.",
+        "description": "Лайфхаки по управлению временем, когда у тебя 3-4 новичка.",
         "content": [
             "Prioritize status management and pace control when quality drops.",
             "Treat 20 minutes of silence as a red flag and check in proactively.",
@@ -125,8 +125,8 @@ MODULE_SEED = [
     },
     {
         "id": 4,
-        "title": "The Criteria & Grading (??????????? ??????)",
-        "description": "??? ??????? ????? ?? 1 ?? 5 ???, ????? ??? ???? fair ? ?????????.",
+        "title": "The Criteria & Grading (Объективная оценка)",
+        "description": "Как ставить баллы от 1 до 5 так, чтобы это было fair и прозрачно.",
         "content": [
             "Apply fair scoring from 1 to 5 with shared interpretation.",
             "Calibrate mentors against the same rubric and quality examples.",
@@ -157,7 +157,7 @@ MODULE_SEED = [
     {
         "id": 5,
         "title": "High-Quality Feedback (Human Firewall)",
-        "description": "??? ?????? ?????? ?? ???????, ?? ??????????? ???????",
+        "description": "Как давать фидбэк по тикетам, не демотивируя новичка",
         "content": [
             "Explain not only what to change, but why it matters for values and security.",
             "Use a 3-revision rule, then switch to synchronous coaching instead of rewriting work.",
@@ -243,34 +243,38 @@ def init_db() -> None:
                 ("Demo Mentor", "mentor@example.com", "demo-password"),
             )
 
-        module_count = conn.execute("SELECT COUNT(*) AS total FROM modules").fetchone()["total"]
-        if module_count == 0:
-            for module in MODULE_SEED:
+        # Keep seed data canonical across environments, including warm Vercel /tmp DBs.
+        for module in MODULE_SEED:
+            conn.execute(
+                """
+                INSERT INTO modules(id, title, description, content)
+                VALUES (?, ?, ?, ?)
+                ON CONFLICT(id) DO UPDATE SET
+                    title = excluded.title,
+                    description = excluded.description,
+                    content = excluded.content
+                """,
+                (
+                    module["id"],
+                    module["title"],
+                    module["description"],
+                    json.dumps(module["content"]),
+                ),
+            )
+            conn.execute("DELETE FROM quizzes WHERE module_id = ?", (module["id"],))
+            for quiz in module["quiz"]:
                 conn.execute(
                     """
-                    INSERT INTO modules(id, title, description, content)
+                    INSERT INTO quizzes(module_id, question, options, correct_answer)
                     VALUES (?, ?, ?, ?)
                     """,
                     (
                         module["id"],
-                        module["title"],
-                        module["description"],
-                        json.dumps(module["content"]),
+                        quiz["question"],
+                        json.dumps(quiz["options"]),
+                        quiz["correct_answer"],
                     ),
                 )
-                for quiz in module["quiz"]:
-                    conn.execute(
-                        """
-                        INSERT INTO quizzes(module_id, question, options, correct_answer)
-                        VALUES (?, ?, ?, ?)
-                        """,
-                        (
-                            module["id"],
-                            quiz["question"],
-                            json.dumps(quiz["options"]),
-                            quiz["correct_answer"],
-                        ),
-                    )
 
 
 def ensure_db_initialized() -> None:
